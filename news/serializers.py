@@ -6,7 +6,8 @@ from .models import Comment, News, UserNewsRelation
 class CommentAuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('author', 'content')
+        fields = ('author', 'content', 'created_at')
+        read_only_fields = ('author', 'created_at')
 
 
 class NewsSerializer(serializers.ModelSerializer):

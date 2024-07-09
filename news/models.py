@@ -25,7 +25,6 @@ class Comment(models.Model):
 class UserNewsRelation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     news = models.ForeignKey(News, on_delete=models.CASCADE)
-    comments = models.ManyToManyField(Comment)
     like = models.BooleanField(default=False)
     in_bookmarks = models.BooleanField(default=False)
 

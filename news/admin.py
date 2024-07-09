@@ -13,7 +13,7 @@ class NewsAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('news', 'author', 'content', 'created_at')
+    list_display = ('id', 'news', 'author', 'content', 'created_at')
     list_filter = ('created_at', 'news')
     search_fields = ('author', 'content', 'news')
     date_hierarchy = 'created_at'
