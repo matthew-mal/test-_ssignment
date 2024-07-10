@@ -4,6 +4,7 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.reverse import reverse
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from .models import News, UserNewsRelation, Comment
@@ -13,8 +14,9 @@ from .serializers import NewsSerializer, UserNewsRelationSerializer, CommentAuth
 
 class NewsViewSet(ModelViewSet):
     queryset = News.objects.all().annotate(
-        annotated_likes=Count(Case(When(usernewsrelation__like=True, then=1)))
-    ).select_related('owner').prefetch_related('comments').order_by('id')
+        likes=Count(Case(When(usernewsrelation__like=True, then=1))),
+        num_comments=Count('comments')
+    ).select_related('owner').prefetch_related('comments').order_by('-id')
     serializer_class = NewsSerializer
     parser_classes = [JSONParser]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -26,6 +28,14 @@ class NewsViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.validated_data['owner'] = self.request.user
         serializer.save()
+
+    def get_comments(self, obj):
+        comments = Comment.objects.filter(news=obj).order_by('-id')[-10]
+        request = self.context.get('request')
+        return {
+            "comments": CommentAuthorSerializer(comments, many=True).data,
+            "all_comments_link": request.build_absolute_url(reverse('news-comments-list', kwargs={'news_id': obj.id})),
+        }
 
 
 class UserNewsRelationViewSet(UpdateModelMixin, GenericViewSet):

@@ -11,14 +11,24 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
 
 class NewsSerializer(serializers.ModelSerializer):
-    annotated_likes = serializers.IntegerField(read_only=True)
+    likes = serializers.IntegerField(read_only=True)
+    num_comments = serializers.IntegerField(read_only=True)
     owner_name = serializers.CharField(source='owner.username', default='', read_only=True)
 
     comments = CommentAuthorSerializer(many=True, read_only=True)
 
     class Meta:
         model = News
-        fields = ('id', 'title', 'content', 'owner_name', 'date_created', 'annotated_likes', 'comments')
+        fields = (
+            'id',
+            'title',
+            'content',
+            'owner_name',
+            'date_created',
+            'likes',
+            'num_comments',
+            'comments'
+        )
 
 
 class UserNewsRelationSerializer(serializers.ModelSerializer):
