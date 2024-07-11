@@ -5,3 +5,5 @@ exclude =
     __pycache__,
     migrations,
     READ.me,
+    Dockerfile,
+    docker-compose.yml
